@@ -1,6 +1,5 @@
-﻿namespace Provider
+﻿namespace DataProvider
 {
-    using System.Collections.Generic;
     using Newtonsoft.Json;
 
     public class RepositoryEntity

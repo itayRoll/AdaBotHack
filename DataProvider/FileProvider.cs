@@ -1,6 +1,5 @@
-﻿namespace Provider
+﻿namespace DataProvider
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -25,25 +24,25 @@
 
             // Filter mendatory fields
             List<RepositoryEntity> mendatoryMatch = entities.Where(e =>
-                e.Level.ToString() == query.Level && 
-                e.Domain.ToString() == query.Domain &&
-                e.MediumType.ToString() == query.MediumType).ToList();
+                e.Level.ToString().ToLower() == query.Level.ToLower() && 
+                e.Domain.ToString().ToLower() == query.Domain.ToLower() &&
+                e.MediumType.ToString().ToLower() == query.MediumType.ToLower()).ToList();
 
             // Filter optional fields
             List<RepositoryEntity> optionalMatch = mendatoryMatch;
             if (!string.IsNullOrEmpty(query.Language))
             {
-                optionalMatch = optionalMatch.Where(e => e.Language == query.Language).ToList();
+                optionalMatch = optionalMatch.Where(e => e.Language.ToLower() == query.Language.ToLower()).ToList();
             }
 
             if (!string.IsNullOrEmpty(query.ProgrammingLanguage))
             {
-                optionalMatch = optionalMatch.Where(e => e.ProgrammingLanguage == query.ProgrammingLanguage).ToList();
+                optionalMatch = optionalMatch.Where(e => e.ProgrammingLanguage.ToLower() == query.ProgrammingLanguage.ToLower()).ToList();
             }
 
             if (!string.IsNullOrEmpty(query.Duration))
             {
-                optionalMatch = optionalMatch.Where(e => e.Duration == query.Duration).ToList();
+                optionalMatch = optionalMatch.Where(e => e.Duration.ToLower() == query.Duration.ToLower()).ToList();
             }
 
             return optionalMatch.Any() ? optionalMatch.Select(a => a.BuildResult()).ToList() :

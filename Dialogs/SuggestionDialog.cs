@@ -1,12 +1,10 @@
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder.Dialogs;
-using Provider;
+using DataProvider;
 using System.Collections.Generic;
-using AdaptiveCards;
 
 namespace SimpleEchoBot.Dialogs
 {
