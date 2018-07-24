@@ -5,19 +5,18 @@
     public class Result
     {
         [JsonProperty("id")]
-        private string Id { get; set; }
+        public string Id { get; set; }
 
         [JsonProperty("displayName")]
-        private string DisplayName { get; set; }
+        public string DisplayName { get; set; }
 
         [JsonProperty("description")]
-        private string Description { get; set; }
+        public string Description { get; set; }
 
         [JsonProperty("link")]
-        private string Link { get; set; }
+        public string Link { get; set; }
 
         [JsonProperty("image")]
-        private string Image { get; set; }
-
+        public string Image { get; set; }
     }
 }
