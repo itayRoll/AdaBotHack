@@ -1,9 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder.Dialogs;
 using System.Net.Http;
+
+using Provider;
 
 
 namespace Microsoft.Bot.Sample.SimpleEchoBot
@@ -11,12 +15,100 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
     [Serializable]
     public class EchoDialog : IDialog<object>
     {
-        protected int count = 1;
+		private const int RawMediumTypeIndex = 4;
+	    private const int RawAgeIndex = 7;
+
+        protected int count = 1; // temp
+	    private string mediumType;
+	    private int age;
+	    private string level;
+	    private string domain;
+
+	    private static readonly IEnumerable<string> levels = new[] {"Begginer", "Intermediate", "Advanced"};
+	    private static readonly IEnumerable<string> interests = new[] {"Games", "Mobile", "Web", "Anything"};
 
         public async Task StartAsync(IDialogContext context)
         {
-            context.Wait(MessageReceivedAsync);
+            context.Wait(ConversationStartAsync);
         }
+
+	    public async Task ConversationStartAsync(IDialogContext context, IAwaitable<IMessageActivity> argument)
+	    {
+		    var msg = await argument;
+			
+		    if (IntentVerifier(msg.Text, "looking for a ", "year old kid"))
+		    {
+				// valid start to the conversation
+			    var msgArr = msg.Text.Split(' ');
+
+			    this.mediumType = msgArr[RawMediumTypeIndex];
+
+			    try
+			    {
+				    this.age = int.Parse(msgArr[RawAgeIndex]);
+					PromptDialog.Choice(
+						context,
+						LevelSelectedAsync,
+						levels,
+						"Great! What is your kid's level?",
+						"Didn't get that!");
+			    }
+			    catch (FormatException)
+			    {
+					// invalid age
+				    await context.PostAsync("Please type in the message again with a valid age.");
+				    context.Wait(ConversationStartAsync);
+				}
+			    
+		    }
+		    else
+		    {
+				// invalid start to the conversation
+			    await context.PostAsync("Please type in the message again correctly.");
+			    context.Wait(ConversationStartAsync);
+			}
+	    }
+
+	    public async Task LevelSelectedAsync(IDialogContext context, IAwaitable<string> argument)
+	    {
+		    var selectedLevel = await argument;
+
+		    if (levels.Contains(selectedLevel))
+		    {
+				// valid level selected
+			    this.level = selectedLevel;
+			    PromptDialog.Choice(
+				    context,
+				    InterestSelectedAsync,
+				    interests,
+				    $"I found a lot of courses for the {this.level} level. What is your kid interested in?",
+				    "Didn't get that!");
+			}
+		    else
+		    {
+			    await context.PostAsync("Please start over.");
+			    context.Wait(ConversationStartAsync);
+			}
+	    }
+
+	    public async Task InterestSelectedAsync(IDialogContext context, IAwaitable<string> argument)
+	    {
+		    var selectedInterest = await argument;
+
+		    if (interests.Contains(selectedInterest))
+		    {
+			    // valid level selected
+			    this.domain = selectedInterest;
+				var query = new Query(this.age, this.level, this.domain, this.mediumType);
+				await context.PostAsync($"Details: Medium={this.mediumType}, Age={this.age}, Level={this.level}, Interest={this.domain}");
+		    }
+		    else
+		    {
+			    await context.PostAsync("Please start over.");
+		    }
+
+		    context.Wait(ConversationStartAsync);
+		}
 
         public async Task MessageReceivedAsync(IDialogContext context, IAwaitable<IMessageActivity> argument)
         {
@@ -52,6 +144,12 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
             }
             context.Wait(MessageReceivedAsync);
         }
+
+	    private static bool IntentVerifier(string rawMessage, params string[] importantParts)
+	    {
+		    var msg = rawMessage.Trim().ToLower();
+		    return importantParts.All(part => msg.Contains(part));
+	    }
 
     }
 }

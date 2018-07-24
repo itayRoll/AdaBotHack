@@ -2,7 +2,19 @@
 {
     public class Query
     {
-        public string Age { get; set; }
+	    public Query(int age, string level, string domain, string mediumType, string language = "english", string programingLanguage = "", string duration = "", string price = "")
+	    {
+		    this.Age = age;
+		    this.Level = level;
+			this.Domain = domain;
+		    this.MediumType = mediumType;
+		    this.Language = language;
+		    this.ProgrammingLanguage = programingLanguage;
+		    this.Duration = duration;
+		    this.Price = price;
+	    }
+
+        public int Age { get; set; }
         public string Level { get; set; }
         public string Domain { get; set; }
         public string MediumType { get; set; }
