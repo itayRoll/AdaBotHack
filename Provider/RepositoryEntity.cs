@@ -1,31 +1,65 @@
 ﻿namespace Provider
 {
     using System.Collections.Generic;
+    using Newtonsoft.Json;
 
     public class RepositoryEntity
-    {        
-        private long Id { get; set; }
+    {
+        [JsonProperty("id")]
+        public long Id { get; set; }
 
-        private string DisplayName { get; set; }
+        [JsonProperty("displayName")]
+        public string DisplayName { get; set; }
 
-        private MediumType MediumType { get; set; }
+        [JsonProperty("mediumType")]
+        public MediumType MediumType { get; set; }
 
-        private DomainType Domain { get; set; }
+        [JsonProperty("domain")]
+        public DomainType Domain { get; set; }
 
-        private string Duration { get; set; }
+        [JsonProperty("duration")]
+        public string Duration { get; set; }
 
-        private LevelType Level { get; set; }
+        [JsonProperty("level")]
+        public LevelType Level { get; set; }
 
-        private string Language { get; set; }
+        [JsonProperty("language")]
+        public string Language { get; set; }
 
-        private string CodeLanguage { get; set; }
+        [JsonProperty("programmingLanguage")]
+        public string ProgrammingLanguage { get; set; }
 
-        private string Description { get; set; }
+        [JsonProperty("description")]
+        public string Description { get; set; }
 
-        private string ContentUrl { get; set; }
+        [JsonProperty("link")]
+        public string ContentUrl { get; set; }
 
-        private string ImageUrl { get; set; }
+        [JsonProperty("image")]
+        public string ImageUrl { get; set; }
 
-        private HashSet<string> AdditionalInfo { get; set; }
+        [JsonProperty("price")]
+        public string Price { get; set; }
+
+        [JsonProperty("additionalInfo")]
+        public HashSet<string> AdditionalInfo { get; set; }
+
+        /// <summary>
+        /// Builds the result object based on the repository entity
+        /// </summary>
+        /// <returns>The result object</returns>
+        public Result BuildResult()
+        {
+            Result ret = new Result()
+            {
+                Description = this.Description,
+                DisplayName = this.DisplayName,
+                Id = this.Id,
+                Image = this.ImageUrl,
+                Link = this.ContentUrl
+            };
+
+            return ret;
+        }
     }
 }
