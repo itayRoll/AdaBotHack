@@ -1,4 +1,4 @@
-﻿namespace Provider
+﻿namespace DataProvider
 {
     using System.Collections.Generic;
 

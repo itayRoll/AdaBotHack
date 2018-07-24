@@ -1,4 +1,4 @@
-﻿namespace Provider
+﻿namespace DataProvider
 {
     public class Result
     {

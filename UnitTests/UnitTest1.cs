@@ -1,8 +1,8 @@
 ﻿namespace UnitTests
 {
     using System.Collections.Generic;
+    using DataProvider;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Provider;
 
     [TestClass]
     public class UnitTest1

@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
     using Microsoft.Bot.Connector;
     using Microsoft.Bot.Builder.Dialogs;
 
-    using Provider;
+    using DataProvider;
 
     [Serializable]
     public class EchoDialog : IDialog<object>
