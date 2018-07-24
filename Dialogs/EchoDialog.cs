@@ -7,9 +7,6 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder.Dialogs;
 using System.Net.Http;
 
-using Provider;
-
-
 namespace Microsoft.Bot.Sample.SimpleEchoBot
 {
     [Serializable]
@@ -26,9 +23,6 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
 
 	    private static readonly IEnumerable<string> levels = new[] {"Begginer", "Intermediate", "Advanced"};
 	    private static readonly IEnumerable<string> interests = new[] {"Games", "Mobile", "Web", "Anything"};
-
-        private readonly FileProvider provider = new FileProvider();
-        private List<Result> results;
 
         public async Task StartAsync(IDialogContext context)
         {
@@ -102,14 +96,7 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
 		    {
 			    // valid level selected
 			    this.domain = selectedInterest;
-
-                // get input from user
-				var query = new Query(this.age, this.level, this.domain, this.mediumType);
-
-                //based on input get results
-		        results = provider.GetResults(query);
-                
-                // display result
+				//var query = new Query(this.age, this.level, this.domain, this.mediumType);
 				await context.PostAsync($"Details: Medium={this.mediumType}, Age={this.age}, Level={this.level}, Interest={this.domain}");
 		    }
 		    else
