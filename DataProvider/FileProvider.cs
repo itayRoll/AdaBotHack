@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
+
     using Newtonsoft.Json;
 
     public class FileProvider : IProvider
@@ -11,7 +13,11 @@
         public List<Result> GetResults(Query query)
         {
             List<RepositoryEntity> entities;
-            using (StreamReader r = new StreamReader("repository.json"))
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "DataProvider.repository.json";
+
+            using (Stream sr = assembly.GetManifestResourceStream(resourceName))
+            using (StreamReader r = new StreamReader(sr))
             {
                 var json = r.ReadToEnd();
                 entities = JsonConvert.DeserializeObject<List<RepositoryEntity>>(json);
