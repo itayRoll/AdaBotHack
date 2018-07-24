@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace SimpleEchoBot.Dialogs
 {
+    using Provider;
+
     [Serializable]
     public class AdaBotLuisDialog : LuisDialog<object>
     {
@@ -38,6 +40,8 @@ namespace SimpleEchoBot.Dialogs
             EntityRecommendation medium;
             result.TryFindEntity("builtin.age", out age);
             result.TryFindEntity("medium", out medium);
+
+            Query uga = new Query(42, string.Empty, string.Empty, string.Empty, string.Empty);
 
             await context.PostAsync($"Awesome! Let's get some {medium.Entity} for your {age.Entity}.");
             context.Wait(MessageReceived);
