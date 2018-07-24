@@ -2,7 +2,7 @@
 {
     public class Query
     {
-	    public Query(int age, string level, string domain, string mediumType, string language = "english", string programingLanguage = "", string duration = "", string price = "")
+	    public Query(int age, string level, string domain, string mediumType, string language = "", string programingLanguage = "", string duration = "", string price = "")
 	    {
 		    this.Age = age;
 		    this.Level = level;
