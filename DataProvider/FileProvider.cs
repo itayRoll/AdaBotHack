@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using Newtonsoft.Json;
 
@@ -9,10 +10,15 @@
     {
         public List<Result> GetResults(Query query)
         {
-            RepositoryEntitys entities = JsonConvert.DeserializeObject<RepositoryEntitys>(Resource.Repository);
+            List<RepositoryEntity> entities;
+            using (StreamReader r = new StreamReader("repository.json"))
+            {
+                var json = r.ReadToEnd();
+                entities = JsonConvert.DeserializeObject<List<RepositoryEntity>>(json);
+            }
 
             // Filter mendatory fields
-            List<RepositoryEntity> mendatoryMatch = entities.Entities.Where(e =>
+            List<RepositoryEntity> mendatoryMatch = entities.Where(e =>
                 e.Level.ToString() == query.Level && 
                 e.Domain.ToString() == query.Domain &&
                 e.MediumType.ToString() == query.MediumType).ToList();
@@ -32,11 +38,6 @@
             if (!string.IsNullOrEmpty(query.Duration))
             {
                 optionalMatch = optionalMatch.Where(e => e.Duration == query.Duration).ToList();
-            }
-
-            if (!string.IsNullOrEmpty(query.Price))
-            {
-                optionalMatch = optionalMatch.Where(e => e.Price == query.Price).ToList();
             }
 
             return optionalMatch.Any() ? optionalMatch.Select(a => a.BuildResult()).ToList() :

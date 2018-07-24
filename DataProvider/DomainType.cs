@@ -6,7 +6,7 @@
         Web,
         Hardware,
         Chatbot,
-        Gaming,
+        Game,
         App,
         Inspirational,
         Education,
