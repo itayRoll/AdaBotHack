@@ -19,14 +19,12 @@ namespace SimpleEchoBot.Dialogs
 
         private int age;
 
-        private string level;
+        private LevelType level;
+        private DomainType domain;
 
-        private string domain;
+        private static readonly List<LevelType> levels = Enum.GetValues(typeof(LevelType)).Cast<LevelType>().ToList();
 
-        private static readonly IEnumerable<string> levels = new[] { "Beginner", "Intermediate", "Advanced" };
-
-        private static readonly IEnumerable<string> interests = new[] { "Games", "Mobile", "Web", "Anything" };
-
+        private static readonly IEnumerable<DomainType> interests = Enum.GetValues(typeof(DomainType)).Cast<DomainType>().ToList();
 
         public AdaBotLuisDialog()
             : base(
@@ -71,7 +69,7 @@ namespace SimpleEchoBot.Dialogs
                 "Didn't get that!");
         }
 
-        public async Task LevelSelectedAsync(IDialogContext context, IAwaitable<string> argument)
+        public async Task LevelSelectedAsync(IDialogContext context, IAwaitable<LevelType> argument)
         {
             var selectedLevel = await argument;
 
@@ -93,7 +91,7 @@ namespace SimpleEchoBot.Dialogs
             }
         }
 
-        public async Task InterestSelectedAsync(IDialogContext context, IAwaitable<string> argument)
+        public async Task InterestSelectedAsync(IDialogContext context, IAwaitable<DomainType> argument)
         {
             var selectedInterest = await argument;
 
