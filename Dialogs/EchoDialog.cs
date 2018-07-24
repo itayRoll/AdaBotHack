@@ -7,9 +7,6 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder.Dialogs;
 using System.Net.Http;
 
-using Provider;
-
-
 namespace Microsoft.Bot.Sample.SimpleEchoBot
 {
     [Serializable]
@@ -99,7 +96,7 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
 		    {
 			    // valid level selected
 			    this.domain = selectedInterest;
-				var query = new Query(this.age, this.level, this.domain, this.mediumType);
+				//var query = new Query(this.age, this.level, this.domain, this.mediumType);
 				await context.PostAsync($"Details: Medium={this.mediumType}, Age={this.age}, Level={this.level}, Interest={this.domain}");
 		    }
 		    else
