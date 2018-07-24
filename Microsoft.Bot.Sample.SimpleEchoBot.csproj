@@ -47,6 +47,9 @@
     <NoWarn>CS1998</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AdaptiveCards, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\AdaptiveCards.1.0.3\lib\net452\AdaptiveCards.dll</HintPath>
+    </Reference>
     <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
       <Private>True</Private>
@@ -175,19 +178,36 @@
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Dialogs\AdaBotLuisDialog.cs" />
     <Compile Include="Dialogs\EchoDialog.cs" />
+    <Compile Include="Dialogs\SuggestionDialog.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider\DomainType.cs" />
+    <Compile Include="Provider\FileProvider.cs" />
+    <Compile Include="Provider\IProvider.cs" />
+    <Compile Include="Provider\LevelType.cs" />
+    <Compile Include="Provider\MediumType.cs" />
+    <Compile Include="Provider\Query.cs" />
+    <Compile Include="Provider\RepositoryEntity.cs" />
+    <Compile Include="Provider\RepositoryEntitys.cs" />
+    <Compile Include="Provider\Resource.Designer.cs" />
+    <Compile Include="Provider\Result.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Provider\repository.json" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Provider\Resource.resx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
