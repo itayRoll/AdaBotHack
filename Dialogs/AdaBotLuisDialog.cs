@@ -10,6 +10,8 @@ namespace SimpleEchoBot.Dialogs
     using System.Collections.Generic;
     using System.Linq;
 
+    using Microsoft.Bot.Connector;
+
     using Provider;
 
     [Serializable]
@@ -26,7 +28,6 @@ namespace SimpleEchoBot.Dialogs
         private static readonly IEnumerable<string> levels = new[] { "Beginner", "Intermediate", "Advanced" };
 
         private static readonly IEnumerable<string> interests = new[] { "Games", "Mobile", "Web", "Anything" };
-
 
         public AdaBotLuisDialog()
             : base(
@@ -61,7 +62,8 @@ namespace SimpleEchoBot.Dialogs
             result.TryFindEntity("medium", out inputMedium);
 
             this.mediumType = inputMedium.Entity;
-            this.age = 42;
+            
+            this.age = 10;
 
             PromptDialog.Choice(
                 context,
@@ -101,8 +103,19 @@ namespace SimpleEchoBot.Dialogs
             {
                 // valid level selected
                 this.domain = selectedInterest;
-                
-                await context.PostAsync($"Details: Medium={this.mediumType}, Age={this.age}, Level={this.level}, Interest={this.domain}");
+
+                // get input from user
+                var query = new Query(this.age, this.level, this.domain, this.mediumType);
+
+                var provider = new FileProvider();
+                // get results accourding to the input
+                var results = provider.GetResults(query);
+
+                var thumbnailCard = getAdaptiveCard(results.FirstOrDefault());
+                IMessageActivity reply = context.MakeMessage();
+                reply.Attachments.Add(thumbnailCard.ToAttachment());
+
+                await context.PostAsync(reply);
             }
             else
             {
@@ -110,6 +123,17 @@ namespace SimpleEchoBot.Dialogs
             }
 
             context.Wait(this.MessageReceived);
+        }
+
+        private ThumbnailCard getAdaptiveCard(Result suggestedResult)
+        {
+            return new ThumbnailCard
+                       {
+                           Title = suggestedResult.DisplayName,
+                           Text = suggestedResult.Description,
+                           Images = new List<CardImage> { new CardImage(suggestedResult.Image) },
+                           Buttons = new List<CardAction> { new CardAction(ActionTypes.OpenUrl, "Get Started", value: suggestedResult.Link) }
+                       };
         }
     }
 }
