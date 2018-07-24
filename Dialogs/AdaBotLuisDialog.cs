@@ -83,7 +83,7 @@ namespace SimpleEchoBot.Dialogs
                     context,
                     InterestSelectedAsync,
                     interests,
-                    $"I found a lot of courses for the {this.level} level. What is your kid interested in?",
+                    $"I found a lot of {this.mediumType} options for the {this.level} level. What is your kid interested in?",
                     "Didn't get that!");
             }
             else
