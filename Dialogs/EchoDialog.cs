@@ -1,14 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Builder.Dialogs;
-using System.Net.Http;
-
 namespace Microsoft.Bot.Sample.SimpleEchoBot
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using Microsoft.Bot.Connector;
+    using Microsoft.Bot.Builder.Dialogs;
+
+    using Provider;
+
     [Serializable]
     public class EchoDialog : IDialog<object>
     {
@@ -23,6 +24,9 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
 
 	    private static readonly IEnumerable<string> levels = new[] {"Begginer", "Intermediate", "Advanced"};
 	    private static readonly IEnumerable<string> interests = new[] {"Games", "Mobile", "Web", "Anything"};
+
+        private readonly IProvider provider = new FileProvider();
+        private List<Result> results;
 
         public async Task StartAsync(IDialogContext context)
         {
@@ -96,7 +100,14 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
 		    {
 			    // valid level selected
 			    this.domain = selectedInterest;
-				//var query = new Query(this.age, this.level, this.domain, this.mediumType);
+
+                // get input from user
+				var query = new Query(this.age, this.level, this.domain, this.mediumType);
+
+                // get results accourding to the input
+		        results = provider.GetResults(query);
+
+                // post replay to user
 				await context.PostAsync($"Details: Medium={this.mediumType}, Age={this.age}, Level={this.level}, Interest={this.domain}");
 		    }
 		    else
