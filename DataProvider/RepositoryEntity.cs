@@ -5,44 +5,41 @@
 
     public class RepositoryEntity
     {
-        [JsonProperty("id")]
+        [JsonProperty("Id")]
         public long Id { get; set; }
 
-        [JsonProperty("displayName")]
+        [JsonProperty("DisplayName")]
         public string DisplayName { get; set; }
 
-        [JsonProperty("mediumType")]
+        [JsonProperty("MediumType")]
         public MediumType MediumType { get; set; }
 
-        [JsonProperty("domain")]
+        [JsonProperty("Domain")]
         public DomainType Domain { get; set; }
 
-        [JsonProperty("duration")]
+        [JsonProperty("Duration")]
         public string Duration { get; set; }
 
-        [JsonProperty("level")]
+        [JsonProperty("Level")]
         public LevelType Level { get; set; }
 
-        [JsonProperty("language")]
+        [JsonProperty("Language")]
         public string Language { get; set; }
 
-        [JsonProperty("programmingLanguage")]
+        [JsonProperty("ProgrammingLanguage")]
         public string ProgrammingLanguage { get; set; }
 
-        [JsonProperty("description")]
+        [JsonProperty("Description")]
         public string Description { get; set; }
 
-        [JsonProperty("link")]
+        [JsonProperty("Link")]
         public string ContentUrl { get; set; }
 
-        [JsonProperty("image")]
+        [JsonProperty("ImageUrl")]
         public string ImageUrl { get; set; }
 
-        [JsonProperty("price")]
-        public string Price { get; set; }
-
-        [JsonProperty("additionalInfo")]
-        public HashSet<string> AdditionalInfo { get; set; }
+        [JsonProperty("AdditionalInfo")]
+        public string AdditionalInfo { get; set; }
 
         /// <summary>
         /// Builds the result object based on the repository entity
