@@ -9,25 +9,18 @@
 			this.Domain = domain;
 		    this.MediumType = mediumType;
 		    this.Language = language;
-		    this.ProgramingLanguage = programingLanguage;
+		    this.ProgrammingLanguage = programingLanguage;
 		    this.Duration = duration;
 		    this.Price = price;
 	    }
 
-        private int Age { get; set; }
-
-        private string Level { get; set; }
-
-	    private string Domain { get; set; }
-
-	    private string MediumType { get; set; }
-
-	    private string Language { get; set; }
-
-	    private string ProgramingLanguage { get; set; }
-
-	    private string Duration { get; set; }
-
-	    private string Price { get; set; }
+        public int Age { get; set; }
+        public string Level { get; set; }
+        public string Domain { get; set; }
+        public string MediumType { get; set; }
+        public string Language { get; set; }
+        public string ProgrammingLanguage { get; set; }
+        public string Duration { get; set; }
+        public string Price { get; set; }
     }
 }
