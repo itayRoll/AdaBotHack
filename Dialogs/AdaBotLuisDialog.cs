@@ -9,6 +9,7 @@ namespace SimpleEchoBot.Dialogs
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.RegularExpressions;
 
     using Microsoft.Bot.Connector;
 
@@ -27,7 +28,7 @@ namespace SimpleEchoBot.Dialogs
 
         private static readonly IEnumerable<string> levels = new[] { "Beginner", "Intermediate", "Advanced" };
 
-        private static readonly IEnumerable<string> interests = new[] { "Game", "Mobile", "Web", "Anything" };
+        private static readonly IEnumerable<string> interests = new[] { "Game", "Mobile", "Web", "Hardware", "Anything" }; 
 
         public AdaBotLuisDialog()
             : base(
@@ -42,7 +43,7 @@ namespace SimpleEchoBot.Dialogs
         [LuisIntent("None")]
         public async Task NoneIntent(IDialogContext context, LuisResult result)
         {
-            await context.PostAsync("Hmmm...");
+            await context.PostAsync("Hmmm...\nI don't have anything smart to say about that.");
             context.Wait(this.MessageReceived);
         }
 
@@ -56,21 +57,41 @@ namespace SimpleEchoBot.Dialogs
         [LuisIntent("StartConversation")]
         public async Task StartConversationIntent(IDialogContext context, LuisResult result)
         {
-            EntityRecommendation inputAge;
-            EntityRecommendation inputMedium;
-            result.TryFindEntity("builtin.age", out inputAge);
-            result.TryFindEntity("medium", out inputMedium);
+            try
+            {
+                EntityRecommendation inputAge;
+                EntityRecommendation inputMedium;
 
-            this.mediumType = inputMedium.Entity;
-            
-            this.age = 10;
+                if (result.TryFindEntity("builtin.age", out inputAge))
+                {
+                    var match = Regex.Match(inputAge.Entity, "\\d+");
+                    this.age = Convert.ToInt32(match.Value);
 
-            PromptDialog.Choice(
-                context,
-                LevelSelectedAsync,
-                levels,
-                "Great! What is your kid's level of knowledge?",
-                "Didn't get that!");
+                    if (result.TryFindEntity("medium", out inputMedium))
+                    {
+                        this.mediumType = inputMedium.Entity;
+
+                        PromptDialog.Choice(
+                            context,
+                            LevelSelectedAsync,
+                            levels,
+                            "Great! What is your kid's level of knowledge?",
+                            "Didn't get that!");
+                    }
+                    else
+                    {
+                        await this.HandleError(context, "couldn't understand what you are looking for");
+                    }
+                }
+                else
+                {
+                    await this.HandleError(context, "couldn't get age");
+                }
+            }
+            catch (Exception e)
+            {
+                await this.HandleError(context, e.ToString());
+            }
         }
 
         public async Task LevelSelectedAsync(IDialogContext context, IAwaitable<string> argument)
@@ -90,8 +111,7 @@ namespace SimpleEchoBot.Dialogs
             }
             else
             {
-                await context.PostAsync("Please start over.");
-                context.Wait(this.MessageReceived);
+                await this.HandleError(context, $"couldn't find level {selectedLevel}");
             }
         }
 
@@ -111,11 +131,20 @@ namespace SimpleEchoBot.Dialogs
                 // get results accourding to the input
                 var results = provider.GetResults(query);
 
-                var thumbnailCard = getAdaptiveCard(results.FirstOrDefault());
-                IMessageActivity reply = context.MakeMessage();
-                reply.Attachments.Add(thumbnailCard.ToAttachment());
+                var result = results.FirstOrDefault();
 
-                await context.PostAsync(reply);
+                if (result != null)
+                {
+                    var thumbnailCard = getAdaptiveCard(results.FirstOrDefault());
+                    IMessageActivity reply = context.MakeMessage();
+                    reply.Attachments.Add(thumbnailCard.ToAttachment());
+
+                    await context.PostAsync(reply);
+                }
+                else
+                {
+                    await context.PostAsync("Sorry, couldn't find a good match for you.");
+                }
             }
             else
             {
@@ -134,6 +163,12 @@ namespace SimpleEchoBot.Dialogs
                            Images = new List<CardImage> { new CardImage(suggestedResult.Image) },
                            Buttons = new List<CardAction> { new CardAction(ActionTypes.OpenUrl, "Get Started", value: suggestedResult.Link) }
                        };
+        }
+
+        private async Task HandleError(IDialogContext context, string error)
+        {
+            await context.PostAsync($"Oops! I've encountered an error ({error}).\nPlease start over.");
+            context.Wait(this.MessageReceived);
         }
     }
 }
