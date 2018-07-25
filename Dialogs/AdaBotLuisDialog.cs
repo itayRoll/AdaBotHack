@@ -37,7 +37,7 @@
         {
         }
 
-        public static string Greeting { get; } = "Hi I’m AdaBot!\nI would love to show you some great programming educational content.\nAll I need is the age and the type of content you think your kid will be interested in. It can be a course, lecture, workshop etc.\nYou can also provide the language, programming language and duration.\n**Try typing** Show me a workshop for my 12 year old daughter :-)";
+        public static string Greeting { get; } = $"Hi I’m AdaBot!{Environment.NewLine}I \U0001F600 would love to show you some great programming educational content.{Environment.NewLine}All I need is the age and the type of content you think your kid will be interested in. It can be a course, lecture, workshop etc.{Environment.NewLine}You can also provide the language, programming language and duration.{Environment.NewLine}**Try typing** Show me a workshop for my 12 year old daughter";
 
 		[LuisIntent("None")]
         public async Task NoneIntent(IDialogContext context, LuisResult result)
