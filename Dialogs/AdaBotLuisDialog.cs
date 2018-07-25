@@ -22,13 +22,13 @@ namespace SimpleEchoBot.Dialogs
 
         private int age;
 
-        private string level;
+        private LevelType level;
 
-        private string domain;
+        private DomainType domain;
 
-        private static readonly IEnumerable<string> levels = new[] { "Beginner", "Intermediate", "Advanced" };
+        private static readonly List<LevelType> levels = Enum.GetValues(typeof(LevelType)).Cast<LevelType>().ToList();
 
-        private static readonly IEnumerable<string> interests = new[] { "Game", "Mobile", "Web", "Hardware", "Anything" }; 
+        private static readonly IEnumerable<DomainType> interests = Enum.GetValues(typeof(DomainType)).Cast<DomainType>().ToList();
 
         public AdaBotLuisDialog()
             : base(
@@ -94,7 +94,7 @@ namespace SimpleEchoBot.Dialogs
             }
         }
 
-        public async Task LevelSelectedAsync(IDialogContext context, IAwaitable<string> argument)
+        public async Task LevelSelectedAsync(IDialogContext context, IAwaitable<LevelType> argument)
         {
             var selectedLevel = await argument;
 
@@ -115,7 +115,7 @@ namespace SimpleEchoBot.Dialogs
             }
         }
 
-        public async Task InterestSelectedAsync(IDialogContext context, IAwaitable<string> argument)
+        public async Task InterestSelectedAsync(IDialogContext context, IAwaitable<DomainType> argument)
         {
             var selectedInterest = await argument;
 
@@ -125,26 +125,24 @@ namespace SimpleEchoBot.Dialogs
                 this.domain = selectedInterest;
 
                 // get input from user
-                var query = new Query(this.age, this.level, this.domain, this.mediumType);
+                var query = new Query(this.age, this.level.ToString(), this.domain.ToString(), this.mediumType);
 
                 var provider = new FileProvider();
                 // get results accourding to the input
                 var results = provider.GetResults(query);
-
-                var result = results.FirstOrDefault();
-
-                if (result != null)
+                
+                IMessageActivity reply;
+                if (results.Any())
                 {
-                    var thumbnailCard = getAdaptiveCard(results.FirstOrDefault());
-                    IMessageActivity reply = context.MakeMessage();
-                    reply.Attachments.Add(thumbnailCard.ToAttachment());
-
-                    await context.PostAsync(reply);
+                    reply = GetReply(context, results.First());
                 }
                 else
                 {
-                    await context.PostAsync("Sorry, couldn't find a good match for you.");
+                    reply = GetCannedReply(context);
                 }
+
+                await context.PostAsync(reply);
+
             }
             else
             {
@@ -152,17 +150,51 @@ namespace SimpleEchoBot.Dialogs
             }
 
             context.Wait(this.MessageReceived);
+        }       
+
+        private IMessageActivity GetReply(IDialogContext context, Result suggestedResult)
+        {
+            CardAction getStartedCardAction = new CardAction(ActionTypes.OpenUrl, "Get Started", value: suggestedResult.Link);
+            CardAction getMoreCardAction = new CardAction(ActionTypes.PostBack, "Get More", value: "GetMore");
+
+            var thumbnailCard = new ThumbnailCard
+            {
+                Title = suggestedResult.DisplayName,
+                Text = suggestedResult.Description,
+                Images = new List<CardImage> { new CardImage("https://www.google.com/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwiHuJWk0rfcAhWRCOwKHSZvCT4QjRx6BAgBEAU&url=http%3A%2F%2Fwww.edutechpost.com%2Fcodemonkey-coding-children%2F&psig=AOvVaw3VQGIaT364jlPrZWbZN5_S&ust=1532518456232233") },
+                Buttons = new List<CardAction> { getStartedCardAction, }
+            };
+
+            IMessageActivity reply = context.MakeMessage();
+            reply.Attachments.Add(thumbnailCard.ToAttachment());
+
+            return reply;
         }
 
-        private ThumbnailCard getAdaptiveCard(Result suggestedResult)
+        private IMessageActivity GetCannedReply(IDialogContext context)
         {
-            return new ThumbnailCard
-                       {
-                           Title = suggestedResult.DisplayName,
-                           Text = suggestedResult.Description,
-                           Images = new List<CardImage> { new CardImage(suggestedResult.Image) },
-                           Buttons = new List<CardAction> { new CardAction(ActionTypes.OpenUrl, "Get Started", value: suggestedResult.Link) }
-                       };
+            Result suggestedResult = new Result()
+            {
+                DisplayName = "Code Monkey- Python chatbot",
+                Link = "https://www.playcodemonkey.com/python-chatbot/",
+                Description = "Create a chatbot using python!"
+            };
+
+            CardAction getStartedCardAction = new CardAction(ActionTypes.OpenUrl, "Get Started", value: suggestedResult.Link);
+
+            var thumbnailCard = new ThumbnailCard
+            {
+                Title = suggestedResult.DisplayName,
+                Text = suggestedResult.Description,
+                Images = new List<CardImage> { new CardImage("https://www.google.com/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwiHuJWk0rfcAhWRCOwKHSZvCT4QjRx6BAgBEAU&url=http%3A%2F%2Fwww.edutechpost.com%2Fcodemonkey-coding-children%2F&psig=AOvVaw3VQGIaT364jlPrZWbZN5_S&ust=1532518456232233") },
+                Buttons = new List<CardAction> { getStartedCardAction }
+            };
+
+            IMessageActivity reply = context.MakeMessage();
+            reply.Text = "I didn't find content to match your request, Here is a suggestion that I really like!";
+            reply.Attachments.Add(thumbnailCard.ToAttachment());
+
+            return reply;
         }
 
         private async Task HandleError(IDialogContext context, string error)
