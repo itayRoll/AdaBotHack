@@ -1,4 +1,6 @@
-﻿namespace DataProvider
+﻿using System;
+
+namespace DataProvider
 {
     using System.Collections.Generic;
     using System.IO;
@@ -22,14 +24,19 @@
                 entities = JsonConvert.DeserializeObject<List<RepositoryEntity>>(json);
             }
 
-            // Filter mendatory fields
-            List<RepositoryEntity> mendatoryMatch = entities.Where(e =>
-                e.Level.ToString().ToLower() == query.Level.ToLower() && 
-                e.Domain.ToString().ToLower() == query.Domain.ToLower() &&
-                e.MediumType.ToString().ToLower() == query.MediumType.ToLower()).ToList();
+			var mandatoryMatch = entities.Where(e =>
+				e.Level.ToString().ToLower() == query.Level.ToLower() &&
+				e.MediumType.ToString().ToLower() == query.MediumType.ToLower()).ToList();
+
+			// Filter out by domain only if query is not anything
+	        if (!string.Equals(query.Domain, "anything", StringComparison.OrdinalIgnoreCase))
+	        {
+		        mandatoryMatch = mandatoryMatch.Where(e =>
+			        string.Equals(e.Domain.ToString(), query.Domain, StringComparison.OrdinalIgnoreCase)).ToList();
+	        }
 
             // Filter optional fields
-            List<RepositoryEntity> optionalMatch = mendatoryMatch;
+            List<RepositoryEntity> optionalMatch = mandatoryMatch;
             if (!string.IsNullOrEmpty(query.Language))
             {
                 optionalMatch = optionalMatch.Where(e => e.Language.ToLower() == query.Language.ToLower()).ToList();
@@ -46,7 +53,7 @@
             }
 
             return optionalMatch.Any() ? optionalMatch.Select(a => a.BuildResult()).ToList() :
-                mendatoryMatch.Any() ? mendatoryMatch.Select(a => a.BuildResult()).ToList() : new List<Result>();
+	            mandatoryMatch.Any() ? mandatoryMatch.Select(a => a.BuildResult()).ToList() : new List<Result>();
         }
     }
 }
