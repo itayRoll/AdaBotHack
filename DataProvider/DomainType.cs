@@ -2,13 +2,14 @@
 {
     public enum DomainType
     {
-        Mobile,
+	    Anything,
+		Mobile,
         Web,
         Hardware,
         Chatbot,
         Game,
         App,
         Inspirational,
-        Education,
+        Education
     }
 }
