@@ -47,7 +47,7 @@
                                                     \n
                                                     For example: “I want a workshop for mobile development for my 9 years old who is an intermediate”
                                                     \n
-                                                    Or: “I'm looking for an inspirational video for my 9 years old who is a beginner”";
+                                                    Or: “I'm looking for a workshop for my 9 year old”";
 
         [LuisIntent("None")]
         public async Task NoneIntent(IDialogContext context, LuisResult result)
