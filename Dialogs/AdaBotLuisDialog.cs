@@ -12,7 +12,7 @@ namespace SimpleEchoBot.Dialogs
 
     using Microsoft.Bot.Connector;
 
-    using Provider;
+    using DataProvider;
 
     [Serializable]
     public class AdaBotLuisDialog : LuisDialog<object>
@@ -27,7 +27,7 @@ namespace SimpleEchoBot.Dialogs
 
         private static readonly IEnumerable<string> levels = new[] { "Beginner", "Intermediate", "Advanced" };
 
-        private static readonly IEnumerable<string> interests = new[] { "Games", "Mobile", "Web", "Anything" };
+        private static readonly IEnumerable<string> interests = new[] { "Game", "Mobile", "Web", "Anything" };
 
         public AdaBotLuisDialog()
             : base(

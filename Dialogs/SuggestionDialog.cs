@@ -8,6 +8,8 @@ using System.Collections.Generic;
 
 namespace SimpleEchoBot.Dialogs
 {
+    using DataProvider;
+
     [Serializable]
     public class SuggestionDialog : IDialog<object>
     {
