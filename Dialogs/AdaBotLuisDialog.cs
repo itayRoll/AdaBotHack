@@ -37,19 +37,9 @@
         {
         }
 
-        public static string Greeting { get; } = @"Hi I’m AdaBot!
-                                                    \n
-                                                    I would love to provide you with some great content for programming.
-                                                    \n
-                                                    Let me know the Domain, Medium type, level and age of your child, so I can find something that will do.
-                                                    \n
-                                                    You can also provide the Language, Programming language and Duration.
-                                                    \n
-                                                    For example: “I want a workshop for mobile development for my 9 years old who is an intermediate”
-                                                    \n
-                                                    Or: “I'm looking for an inspirational video for my 9 years old who is a beginner”";
+        public static string Greeting { get; } = "Hi I’m AdaBot!\nI would love to show you some great programming educational content.\nAll I need is the age and the type of content you think your kid will be interested in. It can be a course, lecture, workshop etc.\nYou can also provide the language, programming language and duration.\n**Try typing** Show me a workshop for my 12 year old daughter :-)";
 
-        [LuisIntent("None")]
+		[LuisIntent("None")]
         public async Task NoneIntent(IDialogContext context, LuisResult result)
         {
             await context.PostAsync("Hmmm...\nI don't have anything smart to say about that.");
