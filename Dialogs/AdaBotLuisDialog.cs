@@ -18,7 +18,7 @@
         private static readonly List<LevelType> levels = Enum.GetValues(typeof(LevelType)).Cast<LevelType>().ToList();
 
         private static readonly IEnumerable<DomainType> interests =
-            Enum.GetValues(typeof(DomainType)).Cast<DomainType>().ToList();
+            Enum.GetValues(typeof(DomainType)).Cast<DomainType>().ToList().Take(5);
 
         private int age;
 
