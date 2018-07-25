@@ -1,44 +1,48 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Luis;
-using Microsoft.Bot.Builder.Luis.Models;
-using System;
-using System.Configuration;
-using System.Threading.Tasks;
-
-namespace SimpleEchoBot.Dialogs
+﻿namespace SimpleEchoBot.Dialogs
 {
+    using System;
     using System.Collections.Generic;
+    using System.Configuration;
     using System.Linq;
     using System.Text.RegularExpressions;
-
-    using Microsoft.Bot.Connector;
-
+    using System.Threading.Tasks;
     using DataProvider;
+    using Microsoft.Bot.Builder.Dialogs;
+    using Microsoft.Bot.Builder.Luis;
+    using Microsoft.Bot.Builder.Luis.Models;
+    using Microsoft.Bot.Connector;
 
     [Serializable]
     public class AdaBotLuisDialog : LuisDialog<object>
     {
-        private string mediumType;
-
+        private static readonly IEnumerable<string> levels = new[] {"Beginner", "Intermediate", "Advanced"};
+        private static readonly IEnumerable<string> interests = new[] {"Game", "Mobile", "Web", "Hardware", "Anything"};
         private int age;
-
-        private string level;
-
         private string domain;
-
-        private static readonly IEnumerable<string> levels = new[] { "Beginner", "Intermediate", "Advanced" };
-
-        private static readonly IEnumerable<string> interests = new[] { "Game", "Mobile", "Web", "Hardware", "Anything" }; 
+        private string level;
+        private string mediumType;
 
         public AdaBotLuisDialog()
             : base(
                 new LuisService(
-                    model: new LuisModelAttribute(
+                    new LuisModelAttribute(
                         ConfigurationManager.AppSettings["LuisAppId"],
                         ConfigurationManager.AppSettings["LuisAPIKey"],
                         domain: ConfigurationManager.AppSettings["LuisAPIHostName"])))
         {
         }
+
+        public static string Greeting { get; } = @"Hi I’m AdaBot!
+                                                    \n
+                                                    I would love to provide you with some great content for programming.
+                                                    \n
+                                                    Let me know the Domain, Medium type, level and age of your child, so I can find something that will do.
+                                                    \n
+                                                    You can also provide the Language, Programming language and Duration.
+                                                    \n
+                                                    For example: “I want a workshop for mobile development for my 9 years old who is an intermediate”
+                                                    \n
+                                                    Or: “I'm looking for an inspirational video for my 9 years old who is a beginner”";
 
         [LuisIntent("None")]
         public async Task NoneIntent(IDialogContext context, LuisResult result)
@@ -50,7 +54,7 @@ namespace SimpleEchoBot.Dialogs
         [LuisIntent("Greet")]
         public async Task GreetIntent(IDialogContext context, LuisResult result)
         {
-            await context.PostAsync("Hello! And welcome to AdaBot!");
+            await context.PostAsync(Greeting);
             context.Wait(this.MessageReceived);
         }
 
@@ -64,12 +68,12 @@ namespace SimpleEchoBot.Dialogs
 
                 if (result.TryFindEntity("builtin.age", out inputAge))
                 {
-                    var match = Regex.Match(inputAge.Entity, "\\d+");
-                    this.age = Convert.ToInt32(match.Value);
+                    Match match = Regex.Match(inputAge.Entity, "\\d+");
+                    age = Convert.ToInt32(match.Value);
 
                     if (result.TryFindEntity("medium", out inputMedium))
                     {
-                        this.mediumType = inputMedium.Entity;
+                        mediumType = inputMedium.Entity;
 
                         PromptDialog.Choice(
                             context,
@@ -80,7 +84,7 @@ namespace SimpleEchoBot.Dialogs
                     }
                     else
                     {
-                        await this.HandleError(context, "couldn't understand what you are looking for");
+                        await this.HandleError(context, "I'm sorry, I couldn't understand what you are looking for");
                     }
                 }
                 else
@@ -96,17 +100,16 @@ namespace SimpleEchoBot.Dialogs
 
         public async Task LevelSelectedAsync(IDialogContext context, IAwaitable<string> argument)
         {
-            var selectedLevel = await argument;
+            string selectedLevel = await argument;
 
             if (levels.Contains(selectedLevel))
             {
                 // valid level selected
-                this.level = selectedLevel;
+                level = selectedLevel;
                 PromptDialog.Choice(
-                    context,
-                    InterestSelectedAsync,
+                    context, this.InterestSelectedAsync,
                     interests,
-                    $"I found a lot of {this.mediumType} options for the {this.level} level. What is your kid interested in?",
+                    $"I found a lot of {mediumType} options for the {level} level. What is your kid interested in?",
                     "Didn't get that!");
             }
             else
@@ -117,25 +120,25 @@ namespace SimpleEchoBot.Dialogs
 
         public async Task InterestSelectedAsync(IDialogContext context, IAwaitable<string> argument)
         {
-            var selectedInterest = await argument;
+            string selectedInterest = await argument;
 
             if (interests.Contains(selectedInterest))
             {
                 // valid level selected
-                this.domain = selectedInterest;
+                domain = selectedInterest;
 
                 // get input from user
-                var query = new Query(this.age, this.level, this.domain, this.mediumType);
+                Query query = new Query(age, level, domain, mediumType);
 
-                var provider = new FileProvider();
+                FileProvider provider = new FileProvider();
                 // get results accourding to the input
-                var results = provider.GetResults(query);
+                List<Result> results = provider.GetResults(query);
 
-                var result = results.FirstOrDefault();
+                Result result = results.FirstOrDefault();
 
                 if (result != null)
                 {
-                    var thumbnailCard = getAdaptiveCard(results.FirstOrDefault());
+                    ThumbnailCard thumbnailCard = this.getAdaptiveCard(results.FirstOrDefault());
                     IMessageActivity reply = context.MakeMessage();
                     reply.Attachments.Add(thumbnailCard.ToAttachment());
 
@@ -157,12 +160,15 @@ namespace SimpleEchoBot.Dialogs
         private ThumbnailCard getAdaptiveCard(Result suggestedResult)
         {
             return new ThumbnailCard
-                       {
-                           Title = suggestedResult.DisplayName,
-                           Text = suggestedResult.Description,
-                           Images = new List<CardImage> { new CardImage(suggestedResult.Image) },
-                           Buttons = new List<CardAction> { new CardAction(ActionTypes.OpenUrl, "Get Started", value: suggestedResult.Link) }
-                       };
+            {
+                Title = suggestedResult.DisplayName,
+                Text = suggestedResult.Description,
+                Images = new List<CardImage> {new CardImage(suggestedResult.Image)},
+                Buttons = new List<CardAction>
+                {
+                    new CardAction(ActionTypes.OpenUrl, "Get Started", value: suggestedResult.Link)
+                }
+            };
         }
 
         private async Task HandleError(IDialogContext context, string error)
