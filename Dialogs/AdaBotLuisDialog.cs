@@ -160,6 +160,7 @@ namespace SimpleEchoBot.Dialogs
                        {
                            Title = suggestedResult.DisplayName,
                            Text = suggestedResult.Description,
+                           Images = new List<CardImage>(),
                            //Images = new List<CardImage> { new CardImage(suggestedResult.Image) },
                            Buttons = new List<CardAction> { new CardAction(ActionTypes.OpenUrl, "Get Started", value: suggestedResult.Link) }
                        };
