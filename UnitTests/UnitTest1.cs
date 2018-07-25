@@ -19,5 +19,18 @@
 
             Assert.AreEqual(8, res.Count);
         }
+
+        [TestMethod]
+        public void TestMethod2()
+        {
+            // Arrange
+            Query query = new Query(9, LevelType.Intermediate.ToString(), DomainType.Web.ToString(), MediumType.Course.ToString());
+            FileProvider provider = new FileProvider();
+
+            // Act
+            List<Result> res = provider.GetResults(query);
+
+            Assert.AreEqual(2, res.Count);
+        }
     }
 }
