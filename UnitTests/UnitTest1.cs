@@ -17,6 +17,7 @@
             // Act
             List<Result> res = provider.GetResults(query);
 
+            // Assert result
             Assert.AreEqual(8, res.Count);
         }
     }
