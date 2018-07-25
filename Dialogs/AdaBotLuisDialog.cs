@@ -161,10 +161,12 @@
             CardAction getMoreCardAction = new CardAction(ActionTypes.PostBack, "Get More", value: "GetMore");
 
             var imagesList = new List<CardImage>();
+
+            /* Disabling images because of display issues
             if (!string.IsNullOrEmpty(suggestedResult.Image))
             {
                 imagesList.Add(new CardImage(suggestedResult.Image));
-            }
+            }*/
 
             ThumbnailCard thumbnailCard = new ThumbnailCard
             {
