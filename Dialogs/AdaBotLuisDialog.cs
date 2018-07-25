@@ -28,7 +28,7 @@ namespace SimpleEchoBot.Dialogs
 
         private static readonly IEnumerable<string> levels = new[] { "Beginner", "Intermediate", "Advanced" };
 
-        private static readonly IEnumerable<string> interests = new[] { "Game", "Mobile", "Web", "Anything" }; 
+        private static readonly IEnumerable<string> interests = new[] { "Game", "Mobile", "Web", "Hardware", "Anything" }; 
 
         public AdaBotLuisDialog()
             : base(
@@ -131,11 +131,20 @@ namespace SimpleEchoBot.Dialogs
                 // get results accourding to the input
                 var results = provider.GetResults(query);
 
-                var thumbnailCard = getAdaptiveCard(results.FirstOrDefault());
-                IMessageActivity reply = context.MakeMessage();
-                reply.Attachments.Add(thumbnailCard.ToAttachment());
+                var result = results.FirstOrDefault();
 
-                await context.PostAsync(reply);
+                if (result != null)
+                {
+                    var thumbnailCard = getAdaptiveCard(results.FirstOrDefault());
+                    IMessageActivity reply = context.MakeMessage();
+                    reply.Attachments.Add(thumbnailCard.ToAttachment());
+
+                    await context.PostAsync(reply);
+                }
+                else
+                {
+                    await context.PostAsync("Sorry, couldn't find a good match for you.");
+                }
             }
             else
             {
