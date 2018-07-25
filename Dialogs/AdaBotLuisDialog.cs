@@ -18,7 +18,7 @@
         private static readonly List<LevelType> levels = Enum.GetValues(typeof(LevelType)).Cast<LevelType>().ToList();
 
         private static readonly IEnumerable<DomainType> interests =
-            Enum.GetValues(typeof(DomainType)).Cast<DomainType>().ToList();
+            Enum.GetValues(typeof(DomainType)).Cast<DomainType>().ToList().Take(5);
 
         private int age;
 
@@ -150,15 +150,19 @@
                 new CardAction(ActionTypes.OpenUrl, "Get Started", value: suggestedResult.Link);
             CardAction getMoreCardAction = new CardAction(ActionTypes.PostBack, "Get More", value: "GetMore");
 
+            var imagesList = new List<CardImage>();
+
+            /* Disabling images because of display issues
+            if (!string.IsNullOrEmpty(suggestedResult.Image))
+            {
+                imagesList.Add(new CardImage(suggestedResult.Image));
+            }*/
+
             ThumbnailCard thumbnailCard = new ThumbnailCard
             {
                 Title = suggestedResult.DisplayName,
                 Text = suggestedResult.Description,
-                Images = new List<CardImage>
-                {
-                    new CardImage(
-                        "https://www.google.com/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwiHuJWk0rfcAhWRCOwKHSZvCT4QjRx6BAgBEAU&url=http%3A%2F%2Fwww.edutechpost.com%2Fcodemonkey-coding-children%2F&psig=AOvVaw3VQGIaT364jlPrZWbZN5_S&ust=1532518456232233")
-                },
+                Images = imagesList,
                 Buttons = new List<CardAction> {getStartedCardAction}
             };
 
@@ -184,16 +188,12 @@
             {
                 Title = suggestedResult.DisplayName,
                 Text = suggestedResult.Description,
-                Images = new List<CardImage>
-                {
-                    new CardImage(
-                        "https://www.google.com/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwiHuJWk0rfcAhWRCOwKHSZvCT4QjRx6BAgBEAU&url=http%3A%2F%2Fwww.edutechpost.com%2Fcodemonkey-coding-children%2F&psig=AOvVaw3VQGIaT364jlPrZWbZN5_S&ust=1532518456232233")
-                },
+                Images = new List<CardImage>(),
                 Buttons = new List<CardAction> {getStartedCardAction}
             };
 
             IMessageActivity reply = context.MakeMessage();
-            reply.Text = "I didn't find content to match your request, Here is a suggestion that I really like!";
+            reply.Text = "I didn't find content to match your request, But here is a suggestion that I really like!";
             reply.Attachments.Add(thumbnailCard.ToAttachment());
 
             return reply;
